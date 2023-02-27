@@ -7,6 +7,7 @@ on:
 
 env:
   REGISTRY: registry.cn-shenzhen.aliyuncs.com/cnmirror
+  IMAGE_TAG: v1.0
 
 jobs:
   kubespray:
@@ -28,8 +29,4 @@ jobs:
           context: .
           file: Dockerfile.ubuntu2204
           push: true
-          tags: ${{ env.REGISTRY }}/kubernetes:${{ env.KUBERNETES_VERSION }}-${{ env.PACKAGE_VERSION }}
-          build-args: |
-            KUBESPRAY_VERSION=${{ env.KUBESPRAY_VERSION }}
-            KUBERNETES_VERSION=${{ env.KUBERNETES_VERSION }}
-            PACKAGE_VERSION=${{ env.PACKAGE_VERSION }}
+          tags: ${{ env.REGISTRY }}/sshpass-deb:${{ env.IMAGE_TAG }}
