@@ -1,0 +1,17 @@
+FROM ubuntu:22.04 as ubuntu2204
+ENV PKGS=.common[],.ubuntu2204[]
+ENV FILES_LIST=packages.urls
+
+COPY packages.yaml .
+COPY --from=mikefarah/yq:4.11.1 /usr/bin/yq /usr/bin/yq
+
+RUN yq eval "${PKGS}" packages.yaml >> packages.list \
+    && apt update -qq \
+    && sort -u packages.list | xargs apt-get install --yes --reinstall --print-uris | awk -F "'" '{print $2}' | grep -v '^$' | sort -u > packages.urls
+
+RUN echo "files.list:" && cat ${FILES_LIST} \
+    && wget -q -P files -i ${FILES_LIST}
+
+FROM scratch
+COPY --from=ubuntu2204 /packages.urls /
+COPY --from=ubuntu2204 /files /files
